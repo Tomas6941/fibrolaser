@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería — FibroLaser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .gallery-page {
+            padding: 8rem 0 4rem;
+        }
+
+        .gallery-page .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .gallery-grid-large {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .gallery-grid-large .gallery-item {
+            aspect-ratio: 1/1;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .gallery-grid-large .gallery-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gallery-grid-large .gallery-item:nth-child(1).visible { transition-delay: 0.03s; }
+        .gallery-grid-large .gallery-item:nth-child(2).visible { transition-delay: 0.06s; }
+        .gallery-grid-large .gallery-item:nth-child(3).visible { transition-delay: 0.09s; }
+        .gallery-grid-large .gallery-item:nth-child(4).visible { transition-delay: 0.12s; }
+        .gallery-grid-large .gallery-item:nth-child(5).visible { transition-delay: 0.15s; }
+        .gallery-grid-large .gallery-item:nth-child(6).visible { transition-delay: 0.18s; }
+        .gallery-grid-large .gallery-item:nth-child(7).visible { transition-delay: 0.21s; }
+        .gallery-grid-large .gallery-item:nth-child(8).visible { transition-delay: 0.24s; }
+        .gallery-grid-large .gallery-item:nth-child(9).visible { transition-delay: 0.27s; }
+        .gallery-grid-large .gallery-item:nth-child(10).visible { transition-delay: 0.3s; }
+        .gallery-grid-large .gallery-item:nth-child(11).visible { transition-delay: 0.33s; }
+        .gallery-grid-large .gallery-item:nth-child(12).visible { transition-delay: 0.36s; }
+        .gallery-grid-large .gallery-item:nth-child(13).visible { transition-delay: 0.39s; }
+        .gallery-grid-large .gallery-item:nth-child(14).visible { transition-delay: 0.42s; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        /* LIGHTBOX */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: zoom-out;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+            cursor: default;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .lightbox-nav.prev { left: 24px; }
+        .lightbox-nav.next { right: 24px; }
+
+        @media (max-width: 968px) {
+            .gallery-grid-large {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .gallery-grid-large {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+
+            .lightbox-nav {
+                width: 36px;
+                height: 36px;
+            }
+
+            .lightbox-nav.prev { left: 12px; }
+            .lightbox-nav.next { right: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <nav class="container">
+            <a href="index.html" class="logo">Fibro<em>Laser</em></a>
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+                    <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <a href="index.html" class="btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">Volver</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="gallery-page">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Volver al inicio
+            </a>
+            <div class="section-header">
+                <span class="section-tag">Galería</span>
+                <h2>Trabajos realizados</h2>
+                <p>Cada pieza es única. Esto es lo que hacemos.</p>
+            </div>
+            <div class="gallery-grid-large" id="galleryGrid">
+                <div class="gallery-item">
+                    <img src="trabajos/514796971_24465026959770111_3235215236981997668_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/513879237_24463277426611731_386502568376805372_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514251919_24463075369965270_2412187264130381979_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514327631_24461787856760688_964321544242842646_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514340302_24457221700550637_7633920458817647855_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514344426_24462242343381906_6844021575941427705_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514464298_24463277423278398_3571054911920861700_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514487085_24460772890195518_4428216244307161105_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514500647_24461782543427886_920559357475058536_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/514586796_24461782570094550_7899898203636270121_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/515442214_24462243776715096_5879900687072289519_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/515513740_24462243790048428_8294364741830763298_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/724692061_1755119889369164_2326294106200184341_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="trabajos/726548157_1756518429229310_4882924487952260076_n.jpg" alt="Trabajo en madera" class="gallery-media" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">✕</button>
+        <button class="lightbox-nav prev" id="lightboxPrev">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <button class="lightbox-nav next" id="lightboxNext">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+        <img src="" alt="" id="lightboxImage">
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="logo">Fibro<em>Laser</em></div>
+            <p>&copy; 2026 FibroLaser — Corte láser artesanal. Córdoba, Argentina.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const images = Array.from(document.querySelectorAll('#galleryGrid .gallery-item img')).filter(Boolean);
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxCounter = document.getElementById('lightboxCounter');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const lightboxPrev = document.getElementById('lightboxPrev');
+        const lightboxNext = document.getElementById('lightboxNext');
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            if (index < 0 || index >= images.length) return;
+            currentIndex = index;
+            const img = images[index];
+            lightboxImage.src = img.src;
+            lightboxImage.alt = img.alt;
+            lightboxCounter.textContent = `${index + 1} / ${images.length}`;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function navigateLightbox(dir) {
+            const newIndex = currentIndex + dir;
+            if (newIndex >= 0 && newIndex < images.length) {
+                openLightbox(newIndex);
+            }
+        }
+
+        document.querySelectorAll('#galleryGrid .gallery-item').forEach((item, index) => {
+            item.addEventListener('click', () => openLightbox(index));
+        });
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+        lightboxNext.addEventListener('click', () => navigateLightbox(1));
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+    </script>
+</body>
+</html>
